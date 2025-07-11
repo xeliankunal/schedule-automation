@@ -156,6 +156,13 @@ def main():
     """Main function"""
     print("Google Calendar Schedule Reader")
     print("=" * 40)
+
+    # Skip if tomorrow is weekend
+    now = datetime.datetime.now(pytz.timezone(TIMEZONE))
+    tomorrow = now + datetime.timedelta(days=1)
+    if tomorrow.weekday() in [5, 6]:
+        print(f"Tomorrow ({tomorrow.strftime('%A')}) is weekend - No schedule email needed")
+        return
     
     # Authenticate
     print("Authenticating...")
