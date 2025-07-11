@@ -20,7 +20,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly',
 
 # Email configuration
 SENDER_EMAIL = "kunalvsethia@gmail.com"
-RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', 'kunal@insursa.com','kunalvsethia@gmail.com')
+RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', 'kunal@insursa.com,kunalvsethia@gmail.com')
 EMAIL_SUBJECT = "Office Schedule Update"
 
 # Timezone configuration
