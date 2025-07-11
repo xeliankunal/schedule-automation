@@ -23,7 +23,7 @@ SCOPES = ['https://www.googleapis.com/auth/calendar.readonly',
 
 # Email configuration
 SENDER_EMAIL = "kunalvsethia@gmail.com"
-RECIPIENT_EMAIL = "kunalvsethia@gmail.com"  # Change this to your team leader's email
+RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL', 'kunal@insursa.com')
 EMAIL_SUBJECT = "Office Schedule Update"
 
 # Timezone configuration
@@ -72,8 +72,6 @@ def get_tomorrow_events(calendar_service):
     time_max = tomorrow_end.isoformat()
     
     print(f"Fetching events for {tomorrow_start.strftime('%A, %B %d, %Y')}")
-    print(f"Debug - Time range: {time_min} to {time_max}")
-    print(f"Debug - Calendar ID: primary")
     
     try:
         # Call the Calendar API
