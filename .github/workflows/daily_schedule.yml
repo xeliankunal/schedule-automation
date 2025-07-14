@@ -32,7 +32,7 @@ jobs:
       env:
         RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
       run: |
-        python schedule_reader.py
+        python schedule_reader_ci.py
     
     - name: Clean up
       if: always()
