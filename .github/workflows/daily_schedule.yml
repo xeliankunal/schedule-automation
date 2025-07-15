@@ -2,8 +2,9 @@ name: Daily Schedule Email
 
 on:
   schedule:
-    # Runs at 9:00 PM IST (3:30 PM UTC) every day
-    - cron: '30 15 * * *'
+    # Runs at 12:00 PM IST (6:30 AM UTC) every day
+    # IST = UTC + 5:30, so 12:00 PM IST = 6:30 AM UTC
+    - cron: '30 6 * * *'
   workflow_dispatch:  # Allows manual triggering for testing
 
 jobs:
@@ -28,22 +29,26 @@ jobs:
       run: |
         echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > credentials.json
     
-    - name: Create service account key (if available)
-      if: secrets.GOOGLE_SERVICE_ACCOUNT_KEY != ''
+    - name: Create token file (if available)
+      if: ${{ secrets.GOOGLE_TOKEN != '' }}
       run: |
-        echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}" | base64 -d > service-account-key.json
+        echo "${{ secrets.GOOGLE_TOKEN }}" | base64 -d > token.json
     
-    - name: Run consolidated schedule reader
+    - name: Debug - Show current time
+      run: |
+        echo "Current UTC time: $(date -u '+%Y-%m-%d %H:%M:%S')"
+        echo "Current IST time: $(TZ='Asia/Kolkata' date '+%Y-%m-%d %H:%M:%S')"
+    
+    - name: Run schedule reader
       env:
-        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        SCHEDULE_TIME: ${{ vars.SCHEDULE_TIME || '21:00' }}
-        SEND_REMINDER: ${{ vars.SEND_REMINDER || 'true' }}
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL || 'kunalvsethia@gmail.com' }}
         CI: true
         GITHUB_ACTIONS: true
       run: |
+        echo "Starting schedule reader..."
         python schedule_reader.py
     
     - name: Clean up sensitive files
       if: always()
       run: |
-        rm -f credentials.json service-account-key.json token.json
+        rm -f credentials.json token.json
