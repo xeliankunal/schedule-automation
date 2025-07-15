@@ -1,0 +1,49 @@
+name: Daily Schedule Email
+
+on:
+  schedule:
+    # Runs at 9:00 PM IST (3:30 PM UTC) every day
+    - cron: '30 15 * * *'
+  workflow_dispatch:  # Allows manual triggering for testing
+
+jobs:
+  send-schedule:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Create credentials file
+      run: |
+        echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > credentials.json
+    
+    - name: Create service account key (if available)
+      if: secrets.GOOGLE_SERVICE_ACCOUNT_KEY != ''
+      run: |
+        echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}" | base64 -d > service-account-key.json
+    
+    - name: Run consolidated schedule reader
+      env:
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        SCHEDULE_TIME: ${{ vars.SCHEDULE_TIME || '21:00' }}
+        SEND_REMINDER: ${{ vars.SEND_REMINDER || 'true' }}
+        CI: true
+        GITHUB_ACTIONS: true
+      run: |
+        python schedule_reader.py
+    
+    - name: Clean up sensitive files
+      if: always()
+      run: |
+        rm -f credentials.json service-account-key.json token.json
