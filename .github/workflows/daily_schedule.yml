@@ -2,9 +2,14 @@ name: Daily Schedule Email
 
 on:
   schedule:
+<<<<<<< HEAD
     # Runs at 12:00 PM IST (6:30 AM UTC) every day
     # IST = UTC + 5:30, so 12:00 PM IST = 6:30 AM UTC
     - cron: '30 6 * * *'
+=======
+    # Runs at 9:00 PM IST (3:30 PM UTC) every day
+    - cron: '30 15 * * *'
+>>>>>>> f66f1223be94e02e3e8a545914aae7e89641a0cc
   workflow_dispatch:  # Allows manual triggering for testing
 
 jobs:
@@ -13,7 +18,11 @@ jobs:
     
     steps:
     - name: Checkout code
+<<<<<<< HEAD
       uses: actions/checkout@v4
+=======
+      uses: actions/checkout@v3
+>>>>>>> f66f1223be94e02e3e8a545914aae7e89641a0cc
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -29,6 +38,7 @@ jobs:
       run: |
         echo "${{ secrets.GOOGLE_CREDENTIALS }}" | base64 -d > credentials.json
     
+<<<<<<< HEAD
     - name: Create token file (if available)
       if: ${{ secrets.GOOGLE_TOKEN != '' }}
       run: |
@@ -52,3 +62,15 @@ jobs:
       if: always()
       run: |
         rm -f credentials.json token.json
+=======
+    - name: Run schedule reader
+      env:
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+      run: |
+        python schedule_reader_ci.py
+    
+    - name: Clean up
+      if: always()
+      run: |
+        rm -f credentials.json token.json
+>>>>>>> f66f1223be94e02e3e8a545914aae7e89641a0cc
